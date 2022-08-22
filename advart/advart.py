@@ -1,6 +1,8 @@
 import logging
 import random
 import asyncio
+
+from operator import itemgetter
 from string import ascii_letters, digits
 
 import discord
@@ -153,7 +155,7 @@ class AdvArt(commands.Cog):
                 description=_('{}\n\n[Jump to message!]({})').format(
                     message.content, message.jump_url
                 ),
-                color=0xFFCA33
+                color=0xFFCA33,
             )
             embed.add_field(name='Upvotes', value=up)
             embed.add_field(name='Downvotes', value=down)
@@ -167,7 +169,7 @@ class AdvArt(commands.Cog):
             return await ctx.send(_('No submissions recorded!'))
 
         if sort:
-            subs.sort(key=lambda x: x[1], reverse=True)
+            subs.sort(key=itemgetter(1), reverse=True)
 
         pages = []
         for i, (embed, __) in enumerate(subs):
