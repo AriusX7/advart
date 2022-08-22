@@ -1,0 +1,13 @@
+{
+    "author": [
+        "AriusX7"
+    ],
+    "install_msg": "Thank you for trying out the adventure art cog.",
+    "name": "AdvArt",
+    "description": "A helper cog to handle votes for Brawl Stars discord server's adventure art contest",
+    "min_python_version": [
+        3,
+        8,
+        1
+    ]
+}

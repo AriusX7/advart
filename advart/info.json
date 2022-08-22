@@ -1,0 +1,14 @@
+{
+    "author": [
+        "AriusX7"
+    ],
+    "description": "A helper cog to handle votes for Brawl Stars discord server's adventure art contest",
+    "install_msg": "Thank you for installing the Adventure Art cog. Use `[p]load advart` to get started and check out `[p]help AdvArt`.",
+    "min_python_version": [
+        3,
+        8,
+        1
+    ],
+    "min_bot_version": "3.3.10",
+    "type": "COG"
+}
