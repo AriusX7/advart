@@ -226,7 +226,7 @@ class AdvArt(commands.Cog):
     @commands.command()
     @commands.guild_only()
     @is_allowed_user()
-    async def addreact(self, ctx: commands.Context, message_id: int):
+    async def addmsg(self, ctx: commands.Context, message_id: int):
         """Adds the upvote, downvote, and clear emojis to the given message."""
 
         adv_art_channel_id = await self.config.guild(ctx.guild).adv_art_channel_id()
@@ -237,19 +237,23 @@ class AdvArt(commands.Cog):
         if not message:
             return await ctx.send(_('Cannot find the message with provided id.'))
 
-        up = await self.config.guild(ctx.guild).upvote_emoji()
-        down = await self.config.guild(ctx.guild).downvote_emoji()
+        await self.add_reactions(message)
 
-        if not up or not down:
-            return await ctx.send(_('Upvote/downvote emojis not set.'))
+        await ctx.tick()
 
-        await message.add_reaction(discord.PartialEmoji(name=up['name'], id=up['id']))
-        await message.add_reaction(discord.PartialEmoji(name=down['name'], id=down['id']))
-        await message.add_reaction('❌')
+    @commands.command()
+    @commands.guild_only()
+    @is_allowed_user()
+    async def removemsg(self, ctx: commands.Context, message_id: int):
+        """Remove the votes count for the given message from internal storage.
+
+        The bot does not verify if the message id is valid."""
 
         async with self.config.guild(ctx.guild).votes() as votes:
-            if str(message_id) not in votes:
-                votes[str(message_id)] = {}
+            try:
+                votes.remove(str(message_id))
+            except ValueError:
+                pass
 
         await ctx.tick()
 
@@ -294,3 +298,29 @@ class AdvArt(commands.Cog):
 
         message = await channel.fetch_message(payload.message_id)
         await message.remove_reaction(emoji, discord.Object(payload.user_id))
+
+    @commands.Cog.listener()
+    async def on_message(self, message: discord.Message):
+        if message.author.bot or not message.guild:
+            return
+
+        if message.channel.id != await self.config.guild(message.guild).adv_art_channel_id():
+            return
+
+        if message.attachments:
+            await self.add_reactions(message)
+
+    async def add_reactions(self, message: discord.Message):
+        up = await self.config.guild(message.guild).upvote_emoji()
+        down = await self.config.guild(message.guild).downvote_emoji()
+
+        if not up or not down:
+            return
+
+        await message.add_reaction(discord.PartialEmoji(name=up['name'], id=up['id']))
+        await message.add_reaction(discord.PartialEmoji(name=down['name'], id=down['id']))
+        await message.add_reaction('❌')
+
+        async with self.config.guild(message.guild).votes() as votes:
+            if str(message.id) not in votes:
+                votes[str(message.id)] = {}
