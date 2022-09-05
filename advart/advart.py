@@ -87,9 +87,10 @@ class AdvArt(commands.Cog):
     async def allow(self, ctx: commands.Context, *, user: discord.User):
         """Add user to the allowed users list."""
 
+        id = str(user.id)
         async with self.config.guild(ctx.guild).allowed_users() as allowed_users:
-            if user.id not in allowed_users:
-                allowed_users.append(user.id)
+            if id not in allowed_users:
+                allowed_users.append(id)
             await ctx.tick()
 
     @commands.command()
@@ -98,9 +99,10 @@ class AdvArt(commands.Cog):
     async def disallow(self, ctx: commands.Context, *, user: discord.User):
         """Remove user from the allowed users list."""
 
+        id = str(user.id)
         async with self.config.guild(ctx.guild).allowed_users() as allowed_users:
-            if user.id in allowed_users:
-                allowed_users.remove(user.id)
+            if id in allowed_users:
+                allowed_users.remove(id)
                 await ctx.tick()
             else:
                 await ctx.send(_('User {} is not in allowed user lists.').format(user.name))
