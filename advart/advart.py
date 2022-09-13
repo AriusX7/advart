@@ -119,8 +119,8 @@ class AdvArt(commands.Cog):
         up, down = self.count_votes(votes[str(message_id)])
 
         await ctx.send(
-            _('Upvotes: {up}\nDownvotes: {down}\nTotal: {total}').format(
-                up=up, down=down, total=up + down
+            _('Upvotes: {up}\nDownvotes: {down}\nDifference: {difference}').format(
+                up=up, down=down, difference=up - down
             )
         )
 
@@ -159,7 +159,7 @@ class AdvArt(commands.Cog):
             )
             embed.add_field(name='Upvotes', value=up)
             embed.add_field(name='Downvotes', value=down)
-            embed.add_field(name='Total', value=up + down)
+            embed.add_field(name='Difference', value=up - down)
 
             embed.set_image(url=message.attachments[0].proxy_url)
 
