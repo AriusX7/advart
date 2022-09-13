@@ -290,8 +290,6 @@ class AdvArt(commands.Cog):
 
             if msg_id in votes:
                 votes[msg_id][payload.user_id] = score
-            else:
-                votes[msg_id] = {payload.user_id: score}
 
         if not (channel := guild.get_channel(payload.channel_id)):
             return
