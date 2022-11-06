@@ -2,6 +2,7 @@ import logging
 import random
 import asyncio
 
+from datetime import timedelta
 from operator import itemgetter
 from string import ascii_letters, digits
 
@@ -138,18 +139,21 @@ class AdvArt(commands.Cog):
         if not channel:
             return await ctx.send(_('Cannot find the adventure art channel.'))
 
-        subs = []
-        for message_id in votes:
-            try:
-                message: discord.Message = await channel.fetch_message(message_id)
-            except Exception as e:
-                log.error(f'Error fetching message {message_id} in {ctx.guild.name}: {e}')
-                continue
+        first = min([discord.Object(int(i)).created_at for i in votes])
 
+        subs = []
+        async for message in channel.history(after=(first - timedelta(seconds=1))):
             if len(message.attachments) < 1:
                 continue
 
-            up, down = self.count_votes(votes[message_id])
+            if str(message.id) not in votes:
+                log.warning(
+                    f'advart message {message.id} not found in guild '
+                    f'\'{ctx.guild.name}\' channel: \'{channel.name}\''
+                )
+                continue
+
+            up, down = self.count_votes(votes[str(message.id)])
 
             embed = discord.Embed(
                 description=_('{}\n\n[Jump to message!]({})').format(
@@ -159,7 +163,7 @@ class AdvArt(commands.Cog):
             )
             embed.add_field(name='Upvotes', value=up)
             embed.add_field(name='Downvotes', value=down)
-            embed.add_field(name='Difference', value=up - down)
+            embed.add_field(name='Score', value=up - down)
 
             embed.set_image(url=message.attachments[0].proxy_url)
 
