@@ -255,7 +255,7 @@ class AdvArt(commands.Cog):
 
         async with self.config.guild(ctx.guild).votes() as votes:
             try:
-                votes.remove(str(message_id))
+                del votes[str(message_id)]
             except ValueError:
                 pass
 
